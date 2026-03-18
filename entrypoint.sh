@@ -4,9 +4,6 @@ set -e
 CA_DIR="/home/mitmproxy/.mitmproxy"
 mkdir -p "$CA_DIR"
 
-# If a CA cert was injected via env (base64-encoded), restore it before starting.
-# This keeps the CA stable across Railway redeploys so clients don't need to
-# re-import the cert on every deployment.
 if [ -n "$MITMPROXY_CA_B64" ]; then
     echo "$MITMPROXY_CA_B64" | base64 -d > "$CA_DIR/mitmproxy-ca.pem"
     echo "[entrypoint] CA cert restored from MITMPROXY_CA_B64 env var."
@@ -15,10 +12,13 @@ else
     echo "[entrypoint] After first run, export the CA and set MITMPROXY_CA_B64 to persist it."
 fi
 
-exec mitmweb \
+PROXY_PORT="${PORT:-8080}"
+
+echo "[entrypoint] Starting mitmdump on 0.0.0.0:${PROXY_PORT}"
+
+exec mitmdump \
     --listen-host 0.0.0.0 \
-    --listen-port 8080 \
-    --web-host 0.0.0.0 \
-    --web-port 8081 \
+    --listen-port "$PROXY_PORT" \
     --set confdir="$CA_DIR" \
     -s /home/mitmproxy/addon.py
+    
