@@ -15,8 +15,10 @@ else
     echo "[entrypoint] After first run, export the CA and set MITMPROXY_CA_B64 to persist it."
 fi
 
-exec mitmdump \
+exec mitmweb \
     --listen-host 0.0.0.0 \
     --listen-port 8080 \
+    --web-host 0.0.0.0 \
+    --web-port 8081 \
     --set confdir="$CA_DIR" \
     -s /home/mitmproxy/addon.py

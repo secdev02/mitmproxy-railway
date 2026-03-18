@@ -9,5 +9,6 @@ RUN chmod +x /home/mitmproxy/entrypoint.sh
 USER mitmproxy
 
 EXPOSE 8080
+EXPOSE 8081
 
 ENTRYPOINT ["/home/mitmproxy/entrypoint.sh"]
